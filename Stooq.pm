@@ -6,6 +6,7 @@
 #    Copyright (C) 2000, Keith Refson <Keith.Refson@earth.ox.ac.uk>
 #    Copyright (C) 2003, Tomas Carlsson <tc@tompa.nu>
 #    Copytight (C) 2010, Michal Fita <michal.fita@gmail.com>
+#    Copytight (C) 2022, Kaligula <kaligula.dev@gmail.com>
 #
 #    This program is free software; you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
@@ -37,7 +38,7 @@ use LWP::UserAgent;
 use HTTP::Request::Common;
 use utf8;
 
-$VERSION = '0.20';
+$VERSION = '0.21';
 $STOOQ_STOCKS_URL = 'https://stooq.com/q/l/';
 
 sub methods { return (stooq_stocks => \&stooq_stocks); }
@@ -58,7 +59,7 @@ sub stooq_stocks {
   $ua    = $quoter->user_agent;
   foreach my $symbol (@symbols) {
     # Nioch, nioch... stooq accepts only lower case tickers!
-    $url   = $STOOQ_STOCKS_URL . '?s=' . lc $symbol . '&f=sd2t2ohlcabv';
+    $url   = $STOOQ_STOCKS_URL . '?s=' . lc $symbol . '&f=nd2t2ohlcabv';
 	# format (&f=):
 	#	a	ask
 	#	b	bid
@@ -84,15 +85,15 @@ sub stooq_stocks {
     my ($line) = split(/\n/, $reply->content, 1);
     chomp($line);
     # Format:
-    # Symbol,Date,Time,Open,High,Low,Close,Ask,Bid,Volume
-    # "TAURONPE",20101229,"142635",6.77,6.77,6.69,6.71,6.71,6.70,578233
+    # Name,Date,Time,Open,High,Low,Close,Ask,Bid,Volume
+    # CDPROJEKT,2022-10-28,17:01:20,119.5,124.7,118.54,124,124.0,123.94,603435
     my ($name, $date, $time, $open, $high, $low, $last, $ask, $bid, $volume) = split ',', $line;
     utf8::encode($name);
     #if (grep {$_ eq $name} @symbols) {
     unless ($date eq "N/A") {
       #$price =~ s/,/\./; # change decimal point from , to .
       $stocks{$symbol, 'symbol'}   = $symbol;
-      $quoter->store_date(\%stocks, $name, { isodate => $date });
+      $quoter->store_date(\%stocks, $symbol, { isodate => $date });
       $stocks{$symbol, 'time'}     = $time;
       $stocks{$symbol, 'method'}   = 'stooq_stocks';
       $stocks{$symbol, 'source'}   = 'Finance::Quote::Stooq';
