@@ -37,8 +37,8 @@ use LWP::UserAgent;
 use HTTP::Request::Common;
 use utf8;
 
-$VERSION = '0.10';
-$STOOQ_STOCKS_URL = 'http://stooq.com/q/l/';
+$VERSION = '0.20';
+$STOOQ_STOCKS_URL = 'https://stooq.com/q/l/';
 
 sub methods { return (stooq_stocks => \&stooq_stocks); }
 
@@ -69,9 +69,9 @@ sub stooq_stocks {
     my ($line) = split(/\n/, $reply->content, 1);
     chomp($line);
     # Format:
-    # Trade Date, Name, Trade Time,Open, Max,Min,Price,Volume,Unknown
-    # 20101229,"TAURONPE","142635",6.77,6.77,6.69,6.71,578233,0
-    my ($date, $name, $time, $open, $high, $low, $last, $volume, $hmm) = split ',', $line;
+    # Symbol,Date,Time,Open,High,Low,Close,Volume
+    # "TAURONPE",20101229,"142635",6.77,6.77,6.69,6.71,578233
+    my ($name, $date, $time, $open, $high, $low, $last, $volume) = split ',', $line;
     utf8::encode($name);
     #if (grep {$_ eq $name} @symbols) {
     unless ($date eq "N/A") {
@@ -81,7 +81,7 @@ sub stooq_stocks {
       $quoter->store_date(\%stocks, $name, {year => $year, month => $month, day => $day});
       $stocks{$symbol, 'time'}     = ($_ = $time, s/(\d{2})(\d{2})(\d{2})/$1:$2:$3/, $_); 
       $stocks{$symbol, 'method'}   = 'stooq_stocks';
-      $stocks{$symbol, 'source'}   = 'Finance::Quote::GPW';
+      $stocks{$symbol, 'source'}   = 'Finance::Quote::Stooq';
       $stocks{$symbol, 'name'}     = ($_ = $name, s/[\"]//g, $_);
       $stocks{$symbol, 'currency'} = 'PLN'; 
       $stocks{$symbol, 'last'}     = $last;
@@ -128,22 +128,22 @@ open method for accessing such data directly from GPW is not known.
 =head1 STOCK NAMES
 
 Every stock shares traded on Warsaw Stock Exchange has its own unique three
-letter ticker.
+letter ticker (there is one exception â€“ "SVRS").
 
 For example:
 "GPW" for Warsaw Stock Exchange itself,
 "TPE" for Tauron Polska Energia,
-"PZU" for Polski Zak³ad Ubezpieczeñ (most valuable equity is stocks on GPW).
+"CDR" for CD Projekt SA.
 
 =head1 LABELS RETURNED
 
 Information available from GPW may include the following labels:
 date time method source name currency price low high. The prices are available for most
-recect closed session.
+recent closed session.
 
 =head1 SEE ALSO
 
-GPW website - http://www.gpw.pl/
-STOOQ website - http://www.stooq.com/
+GPW website - https://www.gpw.pl/
+STOOQ website - https://stooq.com/ or https://stooq.pl/
 
 =cut
