@@ -43,7 +43,7 @@ $STOOQ_STOCKS_URL = 'https://stooq.com/q/l/';
 sub methods { return (stooq_stocks => \&stooq_stocks); }
 
 {
-  my @labels = qw/date isodate time method source name currency last open high low/;
+  my @labels = qw/date isodate time method source name currency last price open high low ask bid volume/;
 	
   sub labels { return (stooq_stocks => \@labels); }
 }
@@ -58,7 +58,22 @@ sub stooq_stocks {
   $ua    = $quoter->user_agent;
   foreach my $symbol (@symbols) {
     # Nioch, nioch... stooq accepts only lower case tickers!
-    $url   = $STOOQ_STOCKS_URL . '?s=' . lc $symbol;
+    $url   = $STOOQ_STOCKS_URL . '?s=' . lc $symbol . '&f=sd2t2ohlcabv';
+	# format (&f=):
+	#	a	ask
+	#	b	bid
+	#	c	close
+	#	dX	date in format nr X (X=[1,2,3,4])
+	#	h	high
+	#	i	openint
+	#	l	low
+	#	n	name
+	#	o	open
+	#	p	previous
+	#	r	turnover
+	#	s	symbol
+	#	tX	time in format nr X (X=[1,2,3,4])
+	#	v	volume
     $reply = $ua->request(GET $url);
     unless ($reply->is_success) {
       $stocks{$symbol, "success"}  = 0;
@@ -69,26 +84,28 @@ sub stooq_stocks {
     my ($line) = split(/\n/, $reply->content, 1);
     chomp($line);
     # Format:
-    # Symbol,Date,Time,Open,High,Low,Close,Volume
-    # "TAURONPE",20101229,"142635",6.77,6.77,6.69,6.71,578233
-    my ($name, $date, $time, $open, $high, $low, $last, $volume) = split ',', $line;
+    # Symbol,Date,Time,Open,High,Low,Close,Ask,Bid,Volume
+    # "TAURONPE",20101229,"142635",6.77,6.77,6.69,6.71,6.71,6.70,578233
+    my ($name, $date, $time, $open, $high, $low, $last, $ask, $bid, $volume) = split ',', $line;
     utf8::encode($name);
     #if (grep {$_ eq $name} @symbols) {
     unless ($date eq "N/A") {
       #$price =~ s/,/\./; # change decimal point from , to .
       $stocks{$symbol, 'symbol'}   = $symbol;
-      my ($year, $month, $day) = ($date =~ /(\d{4})(\d{2})(\d{2})/);
-      $quoter->store_date(\%stocks, $name, {year => $year, month => $month, day => $day});
-      $stocks{$symbol, 'time'}     = ($_ = $time, s/(\d{2})(\d{2})(\d{2})/$1:$2:$3/, $_); 
+      $quoter->store_date(\%stocks, $name, { isodate => $date });
+      $stocks{$symbol, 'time'}     = $time;
       $stocks{$symbol, 'method'}   = 'stooq_stocks';
       $stocks{$symbol, 'source'}   = 'Finance::Quote::Stooq';
       $stocks{$symbol, 'name'}     = ($_ = $name, s/[\"]//g, $_);
-      $stocks{$symbol, 'currency'} = 'PLN'; 
+      $stocks{$symbol, 'currency'} = 'PLN';
       $stocks{$symbol, 'last'}     = $last;
       $stocks{$symbol, 'price'}    = $last;
       $stocks{$symbol, 'open'}     = $open;
       $stocks{$symbol, 'high'}     = $high;
       $stocks{$symbol, 'low'}      = $low;
+      $stocks{$symbol, 'ask'}     = $ask;
+      $stocks{$symbol, 'bid'}     = $bid;
+      $stocks{$symbol, 'volume'}      = $volume;
       $stocks{$symbol, 'success'}  = 1;
     }
   }
