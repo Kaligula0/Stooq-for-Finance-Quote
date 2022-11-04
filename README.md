@@ -4,7 +4,7 @@ A [Finance::Quote](https://github.com/finance-quote/finance-quote) module (Perl)
 It is highly helpful with assets that are not present in other APIs like e.g. Polish mutual funds, bonds etc..
 
 # Installation
-Download file `Stooq.pm` and paste it into Finance::Quote directory (probably `<perl_dir>\site\lib\Finance\Quote`). Then add string `Stooq` (preferably in alphabetical order) to the `@MODULES` variable in `Quote.pm`.
+Download file `Stooq.pm` and paste it into Finance::Quote directory (probably `<perl_dir>\site\lib\Finance\Quote`). Then add string `Stooq` (preferably in alphabetical order) to the `@MODULES` variable in `Quote.pm` (`<perl_dir>\site\lib\Finance`).
 
 # PLN only
 Firstly, Stooq provides financial data for various assets but it never tells the asset's currency. (And I think it isn't likely to change soon, as I asked them). Secondly, the original author wrote this module because he needed to get financial data about Polish stock market. Due to this, the currency 'PLN' is hardcoded into the module and any request for financial data of a non-PLN asset will provide wrong information and may break your data.
