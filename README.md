@@ -1,5 +1,5 @@
 # Stooq-for-Finance-Quote
-A [Finance::Quote](https://github.com/finance-quote/finance-quote) module (Perl), which retrieves financial data from [Stooq.pl](https://stooq.pl) website. It exposes asset's: name, price, open, high, low, close/last, ask, bid, volume and date/isodate/time of retrieval.
+A [Finance::Quote](https://github.com/finance-quote/finance-quote) module (Perl), which retrieves financial data from [Stooq.com](https://stooq.com) website. It exposes asset's: name, price, open, high, low, close/last, ask, bid, volume and date/isodate/time of retrieval.
 
 It is highly helpful with assets that are not present in other APIs like e.g. Polish mutual funds, bonds etc..
 
