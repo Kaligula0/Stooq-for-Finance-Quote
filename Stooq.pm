@@ -5,7 +5,7 @@
 #    Copyright (C) 2000, Brent Neal <brentn@users.sourceforge.net>
 #    Copyright (C) 2000, Keith Refson <Keith.Refson@earth.ox.ac.uk>
 #    Copyright (C) 2003, Tomas Carlsson <tc@tompa.nu>
-#    Copytight (C) 2010, Michal Fita <michal.fita@gmail.com>
+#    Copytight (C) 2010, Michal Fita
 #    Copytight (C) 2022, Kaligula <kaligula.dev@gmail.com>
 #
 #    This program is free software; you can redistribute it and/or modify
